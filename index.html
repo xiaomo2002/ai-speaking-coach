@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101b30">
+<meta name="description" content="SpeakQuest 英语口语闯关游戏：听、说、练，轻松积累口语表达。">
+<title>SpeakQuest · 英语口语闯关</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1222;--panel:#17233a;--card:#1c2b46;--border:#34435d;--text:#ecf4ff;--muted:#9dafc8;--primary:#62e6b8;--accent:#96abff;--danger:#ffb1a4}
+*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 80% 0,#1a3055,transparent 55%),var(--bg);color:var(--text)}
+button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.shell{max-width:1040px;margin:auto;padding:24px 18px 64px}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:30px}.logo{font-size:24px;font-weight:800;letter-spacing:-.6px}.logo span{color:var(--primary)}.stats{display:flex;gap:10px;flex-wrap:wrap}.pill{border:1px solid var(--border);background:#17253c;border-radius:999px;padding:7px 14px;font-weight:700}
+.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:stretch}.panel{background:linear-gradient(150deg,#1a2a44,#14213a);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:0 18px 50px #0002}.tag{color:var(--primary);font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:800}h1{font-size:clamp(30px,5vw,52px);line-height:1.13;margin:14px 0}h1 em{font-style:normal;color:var(--primary)}p{color:var(--muted)}.mascot{font-size:86px;text-align:center;line-height:1.6}.hero-side{text-align:center;display:flex;flex-direction:column;justify-content:center}.hero-side strong{font-size:22px}.bar{height:11px;background:#0b182a;border-radius:99px;overflow:hidden;margin:15px 0}.bar>div{height:100%;background:linear-gradient(90deg,#45d9a7,#91b3ff);transition:width .3s}.bar-label{font-size:13px;color:var(--muted)}
+.section-title{font-size:22px;margin:32px 0 15px}.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.level{border:1px solid var(--border);border-radius:18px;padding:19px;text-align:left;background:#17243a;color:var(--text);transition:.2s}.level:hover,.level.active{border-color:var(--primary);transform:translateY(-2px)}.level .emoji{font-size:32px}.level strong{display:block;margin:8px 0 3px;font-size:17px}.level small{color:var(--muted)}.level .count{display:block;color:var(--primary);margin-top:10px;font-weight:700;font-size:13px}
+.challenge{margin-top:20px}.challenge-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.progress{font-weight:700;color:var(--primary)}.prompt{font-size:clamp(23px,3vw,34px);font-weight:800;line-height:1.3;margin:18px 0 7px}.translation{font-size:16px;margin:0 0 16px}.action-row{display:flex;gap:10px;flex-wrap:wrap}.btn{background:#2c3d57;color:var(--text);border:1px solid #51617b;border-radius:13px;padding:12px 17px;font-weight:750;min-height:48px}.btn.primary{background:var(--primary);color:#10243a;border-color:var(--primary)}.btn.secondary{background:transparent}.btn:disabled{opacity:.5;cursor:not-allowed}.input-row{display:flex;gap:10px;margin-top:14px}.input-row input{background:#0c1729;color:var(--text);border:1px solid #52617a;border-radius:12px;padding:12px 14px;flex:1;min-width:0}.feedback{padding:16px;border-radius:14px;margin-top:16px;background:#22324d;border:1px solid #475c7b;min-height:52px}.feedback.good{border-color:#4dbd91;background:#153b36}.feedback.warn{border-color:#f0a97f;background:#3c2c31}.subtle{font-size:13px;color:var(--muted)}.footer{color:var(--muted);font-size:13px;margin-top:30px}.hidden{display:none!important}.word{display:inline-block;padding:2px 6px;border-radius:7px;margin:2px 2px 2px 0;background:#283750}.word.match{background:#245b4e;color:#b9ffe4}.resultline{margin-top:8px}.reset{background:none;border:0;color:var(--muted);text-decoration:underline;padding:4px}
+@media(max-width:700px){.hero{grid-template-columns:1fr}.levels{grid-template-columns:1fr}.panel{padding:20px}.mascot{font-size:58px}.input-row{flex-wrap:wrap}.input-row input{flex-basis:100%}.top{margin-bottom:18px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+<div class="logo">🎮 Speak<span>Quest</span></div>
+<div class="stats"><span class="pill" id="xp">⭐ 0 XP</span><span class="pill" id="streak">🔥 0 连胜</span></div>
+</header>
+<section class="hero">
+<div class="panel">
+<div class="tag">Speak a little, grow a lot</div>
+<h1>开口说英语，<br><em>每天闯一关。</em></h1>
+<p>从打招呼到旅行点餐，把英语练习变成小游戏。听示范、跟着说，答对即可获得经验值。</p>
+<div class="bar" aria-label="全部关卡完成进度"><div id="totalBar" style="width:0%"></div></div>
+<div class="bar-label" id="totalText">已完成 0 / 15 句</div>
+</div>
+<div class="panel hero-side"><div class="mascot" aria-hidden="true">🦊🎤</div><strong>今天也要大胆开口！</strong><p>选择一个主题开始练习。</p></div>
+</section>
+<h2 class="section-title">选择练习主题</h2>
+<div class="levels" id="levels" aria-label="练习主题"></div>
+<section class="panel challenge" id="challenge" aria-live="polite">
+<div class="challenge-head"><span class="tag" id="topicLabel">DAILY ENGLISH</span><span class="progress" id="step">第 1 / 5 题</span></div>
+<div class="prompt" id="phrase"></div>
+<p class="translation" id="translation"></p>
+<div class="action-row">
+<button class="btn secondary" id="listen" type="button">🔊 听示范</button>
+<button class="btn primary" id="speak" type="button">🎙️ 开始跟读</button>
+<button class="btn" id="next" type="button">下一题 →</button>
+</div>
+<p class="subtle" id="support">浏览器不支持麦克风识别时，可以打字练习。</p>
+<form class="input-row" id="answerForm">
+<input id="answer" type="text" autocomplete="off" aria-label="输入你说的英文" placeholder="也可以在这里输入英文答案…">
+<button class="btn" type="submit">检查答案</button>
+</form>
+<div class="feedback" id="feedback" role="status">准备好了就点“听示范”，再试着跟读！</div>
+</section>
+<div class="footer">进度只保存在当前浏览器。语音识别可能使用浏览器供应商的在线服务；本游戏按词汇匹配评分，不代表专业发音测评。 <button class="reset" id="reset" type="button">清空本地进度</button></div>
+</main>
+<script>
+"use strict";
+const topics = [
+  {name:"日常打招呼",en:"Everyday",emoji:"👋",items:[
+    ["Hello, nice to meet you.","你好，很高兴认识你。"],
+    ["How are you doing today?","你今天过得怎么样？"],
+    ["My name is Alex.","我叫 Alex。"],
+    ["Where are you from?","你来自哪里？"],
+    ["Have a wonderful day!","祝你今天愉快！"]
+  ]},
+  {name:"咖啡店点单",en:"Coffee Shop",emoji:"☕",items:[
+    ["I would like a cup of coffee.","我想要一杯咖啡。"],
+    ["Can I see the menu?","我可以看一下菜单吗？"],
+    ["Do you have oat milk?","你们有燕麦奶吗？"],
+    ["How much does it cost?","这个多少钱？"],
+    ["Can I pay by card?","我可以刷卡吗？"]
+  ]},
+  {name:"旅行与问路",en:"Travel",emoji:"✈️",items:[
+    ["Where is the train station?","火车站在哪里？"],
+    ["I need a ticket to the airport.","我需要一张去机场的票。"],
+    ["Could you help me, please?","可以请你帮个忙吗？"],
+    ["How long does it take?","需要多长时间？"],
+    ["Thank you for your help.","谢谢你的帮助。"]
+  ]}
+];
+const KEY="speakquest-progress-v1";
+const allIds=topics.flatMap((topic,ti)=>topic.items.map((_,i)=>ti+"-"+i));
+const clean=s=>String(s).toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const words=s=>clean(s).split(" ").filter(Boolean);
+let state={completed:[],xp:0,streak:0};
+try{const saved=JSON.parse(localStorage.getItem(KEY)||"null");if(saved&&Array.isArray(saved.completed)){state.completed=saved.completed.filter(x=>allIds.includes(x));state.xp=Math.max(0,Number(saved.xp)||0);state.streak=Math.max(0,Number(saved.streak)||0)}}catch(_){}
+let topicIndex=0,questionIndex=0,attempted=false,recognition=null;
+const $=id=>document.getElementById(id);
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(_){}}
+function renderStats(){
+ $("xp").textContent="⭐ "+state.xp+" XP";
+ $("streak").textContent="🔥 "+state.streak+" 连胜";
+ $("totalBar").style.width=(state.completed.length/allIds.length*100)+"%";
+ $("totalText").textContent="已完成 "+state.completed.length+" / "+allIds.length+" 句";
+ $("levels").innerHTML="";
+ topics.forEach((topic,i)=>{
+  const count=topic.items.filter((_,j)=>state.completed.includes(i+"-"+j)).length;
+  const b=document.createElement("button");b.type="button";b.className="level"+(topicIndex===i?" active":"");
+  b.setAttribute("aria-pressed",String(topicIndex===i));
+  b.innerHTML='<span class="emoji">'+topic.emoji+'</span><strong>'+topic.name+'</strong><small>'+topic.en+'</small><span class="count">'+count+" / "+topic.items.length+" 已完成</span>";
+  b.addEventListener("click",()=>selectTopic(i));$("levels").appendChild(b);
+ });
+}
+function showQuestion(){
+ attempted=false;
+ const item=topics[topicIndex].items[questionIndex];
+ $("topicLabel").textContent=topics[topicIndex].en.toUpperCase();
+ $("step").textContent="第 "+(questionIndex+1)+" / "+topics[topicIndex].items.length+" 题";
+ $("phrase").textContent=item[0];$("translation").textContent=item[1];
+ $("answer").value="";$("feedback").className="feedback";
+ $("feedback").textContent="准备好了就点“听示范”，再试着跟读！";
+ $("next").textContent=questionIndex===4?"下一主题 →":"下一题 →";
+ renderStats();
+}
+function selectTopic(i){if(recognition){try{recognition.abort()}catch(_){}}topicIndex=i;questionIndex=0;showQuestion()}
+function score(answer){
+ const target=topics[topicIndex].items[questionIndex][0],expected=words(target),given=words(answer);
+ if(!given.length){$("feedback").className="feedback warn";$("feedback").textContent="先说一句或输入英文，再来检查。";return}
+ const counts={};expected.forEach(w=>counts[w]=(counts[w]||0)+1);
+ let hits=0;const matched=given.map(w=>{if((counts[w]||0)>0){counts[w]--;hits++;return true}return false});
+ const percent=Math.round(100*hits/Math.max(expected.length,given.length));
+ const passed=percent>=80;
+ const firstPass=passed&&!attempted;
+ attempted=true;
+ const id=topicIndex+"-"+questionIndex;
+ if(firstPass){state.streak++;if(!state.completed.includes(id)){state.completed.push(id);state.xp+=20}else{state.xp+=5}}
+ if(!passed)state.streak=0;
+ persist();renderStats();
+ const fb=$("feedback");fb.className="feedback "+(passed?"good":"warn");fb.replaceChildren();
+ const title=document.createElement("strong");title.textContent=passed?"🎉 很棒！词汇匹配 "+percent+"%"+(firstPass?" · 获得经验值":""):"💪 再试一次！词汇匹配 "+percent+"%";
+ fb.appendChild(title);
+ const line=document.createElement("div");line.className="resultline";
+ given.forEach((word,i)=>{const el=document.createElement("span");el.className="word"+(matched[i]?" match":"");el.textContent=word;line.appendChild(el)});
+ fb.appendChild(line);
+ const note=document.createElement("div");note.className="subtle resultline";note.textContent="目标句子："+target+"（这是词汇匹配，不是发音准确度评分）";fb.appendChild(note);
+}
+$("listen").addEventListener("click",()=>{
+ if(!("speechSynthesis" in window)){$("support").textContent="当前浏览器无法朗读示范，请直接阅读句子练习。";return}
+ speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(topics[topicIndex].items[questionIndex][0]);utterance.lang="en-US";utterance.rate=.86;speechSynthesis.speak(utterance);
+});
+$("answerForm").addEventListener("submit",e=>{e.preventDefault();score($("answer").value)});
+$("next").addEventListener("click",()=>{
+ if(recognition){try{recognition.abort()}catch(_){}}
+ if(questionIndex===topics[topicIndex].items.length-1){topicIndex=(topicIndex+1)%topics.length;questionIndex=0}else questionIndex++;
+ showQuestion();
+});
+$("reset").addEventListener("click",()=>{
+ if(!window.confirm("确定清空本浏览器的 XP、连胜和完成记录吗？"))return;
+ state={completed:[],xp:0,streak:0};persist();showQuestion();
+});
+const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!Recognition){$("speak").disabled=true;$("speak").textContent="🎙️ 暂不支持语音识别";$("support").textContent="当前浏览器没有提供 Web Speech 语音识别，请使用下方的文字输入。"}
+else $("support").textContent="推荐在 HTTPS 的 Chrome 或 Edge 中使用麦克风；也可以打字练习。";
+$("speak").addEventListener("click",()=>{
+ if(!Recognition)return;
+ if(recognition){try{recognition.abort()}catch(_){}}
+ const r=new Recognition();recognition=r;r.lang="en-US";r.interimResults=false;r.maxAlternatives=1;
+ $("speak").disabled=true;$("speak").textContent="🎧 正在聆听…";
+ r.onresult=e=>{if(recognition!==r)return;const transcript=e.results[0][0].transcript;$("answer").value=transcript;score(transcript)};
+ r.onerror=e=>{if(recognition!==r)return;$("feedback").className="feedback warn";$("feedback").textContent="语音识别未成功（"+e.error+"）。请检查麦克风权限、网络，或改用输入框。"};
+ r.onend=()=>{if(recognition!==r)return;recognition=null;$("speak").disabled=false;$("speak").textContent="🎙️ 开始跟读"};
+ try{r.start()}catch(_){recognition=null;$("speak").disabled=false;$("speak").textContent="🎙️ 开始跟读";$("feedback").textContent="无法启动麦克风，请使用文字输入。"}
+});
+showQuestion();
+</script>
+</body>
+</html>
